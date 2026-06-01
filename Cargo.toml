@@ -1,0 +1,16 @@
+[package]
+name = "lau-dynamical-systems-agents"
+version = "0.1.0"
+edition = "2021"
+description = "Smooth dynamical systems theory applied to agent behavior — fixed points, attractors, bifurcations, chaos"
+license = "MIT"
+
+[dependencies]
+nalgebra = "0.33"
+serde = { version = "1", features = ["derive"] }
+num-traits = "0.2"
+num-complex = "0.4.6"
+
+[dev-dependencies]
+approx = "0.5"
+serde_json = "1"
