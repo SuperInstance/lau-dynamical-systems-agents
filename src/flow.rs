@@ -36,15 +36,18 @@ pub trait VectorField: Send + Sync {
 }
 
 /// A closure-based vector field for convenience.
-#[derive(Clone)]
 pub struct FnVectorField {
     dim: usize,
-    f: fn(&DVector<f64>) -> DVector<f64>,
+    #[allow(clippy::type_complexity)]
+    f: Box<dyn Fn(&DVector<f64>) -> DVector<f64> + Send + Sync>,
 }
 
 impl FnVectorField {
-    pub fn new(dim: usize, f: fn(&DVector<f64>) -> DVector<f64>) -> Self {
-        Self { dim, f }
+    pub fn new<F>(dim: usize, f: F) -> Self
+    where
+        F: Fn(&DVector<f64>) -> DVector<f64> + Send + Sync + 'static,
+    {
+        Self { dim, f: Box::new(f) }
     }
 }
 

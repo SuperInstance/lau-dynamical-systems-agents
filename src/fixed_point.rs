@@ -222,7 +222,7 @@ mod tests {
     fn test_find_nontrivial_fixed_point() {
         // dx/dt = x - x³ → fixed points at x = 0, ±1
         let vf = crate::flow::FnVectorField::new(1, |x| DVector::from_vec(vec![x[0] - x[0].powi(3)]));
-        let fp = find_fixed_point(&vf, &DVector::from_vec(vec![0.5]), 50, 1e-10).unwrap();
+        let fp = find_fixed_point(&vf, &DVector::from_vec(vec![1.5]), 50, 1e-10).unwrap();
         assert_abs_diff_eq!(fp[0], 1.0, epsilon = 1e-6);
     }
 

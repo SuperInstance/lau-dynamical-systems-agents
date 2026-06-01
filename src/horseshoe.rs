@@ -4,9 +4,7 @@
 //! a fractal invariant set with chaotic dynamics described by symbol sequences.
 //! Topological entropy measures the exponential growth rate of distinguishable orbits.
 
-use nalgebra::DVector;
 use serde::{Serialize, Deserialize};
-use std::collections::HashSet;
 
 /// A symbol sequence representing an orbit in symbolic dynamics.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -97,9 +95,9 @@ impl SymbolicDynamics {
         let m = self.transition_matrix();
         let mp = matrix_power(&m, n - 1);
         let mut total = 0u64;
-        for i in 0..self.alphabet_size as usize {
-            for j in 0..self.alphabet_size as usize {
-                total += mp[i][j];
+        for row in mp.iter() {
+            for &val in row.iter() {
+                total += val;
             }
         }
         total
@@ -130,28 +128,28 @@ impl SymbolicDynamics {
 }
 
 /// Compute matrix power.
-fn matrix_power(m: &Vec<Vec<u64>>, p: usize) -> Vec<Vec<u64>> {
+fn matrix_power(m: &[Vec<u64>], p: usize) -> Vec<Vec<u64>> {
     let n = m.len();
     if p == 0 {
         let mut id = vec![vec![0u64; n]; n];
-        for i in 0..n {
-            id[i][i] = 1;
+        for (i, row) in id.iter_mut().enumerate() {
+            row[i] = 1;
         }
         return id;
     }
     if p == 1 {
-        return m.clone();
+        return m.to_vec();
     }
 
     let half = matrix_power(m, p / 2);
     let mut result = mat_mul(&half, &half);
-    if p % 2 == 1 {
+    if !p.is_multiple_of(2) {
         result = mat_mul(&result, m);
     }
     result
 }
 
-fn mat_mul(a: &Vec<Vec<u64>>, b: &Vec<Vec<u64>>) -> Vec<Vec<u64>> {
+fn mat_mul(a: &[Vec<u64>], b: &[Vec<u64>]) -> Vec<Vec<u64>> {
     let n = a.len();
     let mut c = vec![vec![0u64; n]; n];
     for i in 0..n {
@@ -165,7 +163,7 @@ fn mat_mul(a: &Vec<Vec<u64>>, b: &Vec<Vec<u64>>) -> Vec<Vec<u64>> {
 }
 
 /// Estimate largest eigenvalue using power iteration.
-fn largest_eigenvalue(m: &Vec<Vec<u64>>) -> f64 {
+fn largest_eigenvalue(m: &[Vec<u64>]) -> f64 {
     let n = m.len();
     if n == 0 {
         return 0.0;
@@ -226,7 +224,7 @@ impl HorseshoeMap {
         // Use Möbius inversion: primitive(n) = Σ_{d|n} μ(n/d) * N^d
         let mut total = 0i64;
         for d in 1..=n {
-            if n % d == 0 {
+            if n.is_multiple_of(d) {
                 let mobius = mobius_function(n / d);
                 total += mobius * (self.num_strips as i64).pow(d as u32);
             }
@@ -244,10 +242,10 @@ fn mobius_function(n: usize) -> i64 {
     let mut count = 0i32;
     let mut d = 2;
     while d * d <= m {
-        if m % d == 0 {
+        if m.is_multiple_of(d) {
             m /= d;
             count += 1;
-            if m % d == 0 {
+            if m.is_multiple_of(d) {
                 return 0; // squared prime factor
             }
         }

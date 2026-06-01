@@ -30,6 +30,7 @@ pub struct MelnikovResult {
 /// M(t₀) = ∫_{-∞}^{∞} f(x⁰(t)) ∧ g(x⁰(t), t+t₀) · exp(-∫₀ᵗ div(f)(x⁰(s)) ds) dt
 ///
 /// Simplified for 2D: M(t₀) = ∫ f₁(x⁰(t))·g₂(x⁰(t), t+t₀) - f₂(x⁰(t))·g₁(x⁰(t), t+t₀) dt
+#[allow(clippy::too_many_arguments)]
 pub fn melnikov_function(
     f: &dyn VectorField,
     g: &dyn Fn(&DVector<f64>, f64) -> DVector<f64>,

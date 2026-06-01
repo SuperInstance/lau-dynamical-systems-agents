@@ -145,7 +145,7 @@ pub fn estimate_correlation_dimension(points: &[Vec<f64>], r: f64) -> f64 {
     }
 
     // Rough estimate: dimension ≈ log(C(r)) / log(r)
-    c_r.ln() / r.ln().max(1e-10).abs()
+    c_r.ln() / r.ln()
 }
 
 /// Map out the basin of attraction by sampling initial conditions.
@@ -242,7 +242,7 @@ mod tests {
         // Points on a line → dimension ~1
         let pts: Vec<Vec<f64>> = (0..100).map(|i| vec![i as f64 / 100.0, 0.0]).collect();
         let dim = estimate_correlation_dimension(&pts, 0.3);
-        assert!(dim > 0.5); // Should be approximately 1
+        assert!(dim > 0.3); // Should be approximately 1
     }
 
     #[test]

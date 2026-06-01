@@ -67,6 +67,7 @@ pub trait ParameterizedVectorField: Send + Sync {
 /// Closure-based parameterized vector field.
 pub struct FnParameterizedField {
     dim: usize,
+    #[allow(clippy::type_complexity)]
     f: Box<dyn Fn(&DVector<f64>, f64) -> DVector<f64> + Send + Sync>,
 }
 
@@ -146,7 +147,7 @@ pub fn detect_bifurcations(
 fn classify_bifurcation(
     eigen_new: &[Complex<f64>],
     _eigen_old: &[Complex<f64>],
-    dim: usize,
+    _dim: usize,
 ) -> BifurcationType {
     // Check for Hopf: pair of complex eigenvalues crossing imaginary axis
     let new_imag_pairs = eigen_new.iter().filter(|e| e.im.abs() > 0.01 && e.re.abs() < 0.1).count();

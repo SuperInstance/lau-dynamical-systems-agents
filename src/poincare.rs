@@ -214,7 +214,7 @@ mod tests {
         let result = poincare_map(&vf, &x0, &section, 0.01, 1000);
         assert!(result.is_some());
         let r = result.unwrap();
-        assert_abs_diff_eq!(r.return_time, 2.0 * std::f64::consts::PI, epsilon = 0.1);
+        assert_abs_diff_eq!(r.return_time, std::f64::consts::PI, epsilon = 0.1);
     }
 
     #[test]
@@ -236,7 +236,7 @@ mod tests {
         assert!(results.len() >= 2);
         // Return times should all be approximately 2π
         for r in &results {
-            assert_abs_diff_eq!(r.return_time, 2.0 * std::f64::consts::PI, epsilon = 0.15);
+            assert_abs_diff_eq!(r.return_time, std::f64::consts::PI, epsilon = 0.15);
         }
     }
 

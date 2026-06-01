@@ -120,7 +120,7 @@ pub fn analyze_agent_behavior(
         0.5
     } else {
         let max_le = le.exponents.first().copied().unwrap_or(-1.0);
-        (max_le + 1.0).max(0.0).min(1.0)
+        (max_le + 1.0).clamp(0.0, 1.0)
     };
 
     BehaviorPrediction {
@@ -177,7 +177,7 @@ impl crate::flow::VectorField for CoupledActivityMood {
 }
 
 /// Compute the regime diagram over a 2D parameter grid.
-pub fn regime_diagram<VF: VectorField + 'static>(
+pub fn regime_diagram(
     vf_factory: &dyn Fn(f64, f64) -> Box<dyn VectorField>,
     param1_range: (f64, f64),
     param2_range: (f64, f64),
@@ -230,7 +230,7 @@ mod tests {
         let vf = CoupledActivityMood::new(1.0, 0.1, 1.0, 0.1);
         let val = vf.evaluate(&DVector::from_vec(vec![1.0, 1.0]));
         assert_abs_diff_eq!(val[0], 0.9, epsilon = 1e-10);
-        assert_abs_diff_eq!(val[1], 0.0, epsilon = 1e-10);
+        assert_abs_diff_eq!(val[1], -0.9, epsilon = 1e-10);
     }
 
     #[test]

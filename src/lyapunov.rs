@@ -62,6 +62,7 @@ pub fn compute_lyapunov_exponents(
         if (step + 1) % orth_interval == 0 {
             gram_schmidt_inplace(&mut q);
             // Record growth rates
+            #[allow(clippy::needless_range_loop)]
             for i in 0..n {
                 let col_norm = q.column(i).norm();
                 if col_norm > 1e-15 {
@@ -143,7 +144,7 @@ pub fn maximal_lyapunov_exponent(
 fn rand_simple() -> f64 {
     use std::cell::Cell;
     thread_local! {
-        static SEED: Cell<u64> = Cell::new(12345);
+        static SEED: Cell<u64> = const { Cell::new(12345) };
     }
     SEED.with(|s| {
         let mut seed = s.get();
@@ -155,9 +156,9 @@ fn rand_simple() -> f64 {
 
 fn rk4_step_fn(vf: &dyn VectorField, x: &DVector<f64>, dt: f64) -> DVector<f64> {
     let k1 = vf.evaluate(x);
-    let k2 = vf.evaluate(&(&*x + &k1.scale(dt / 2.0)));
-    let k3 = vf.evaluate(&(&*x + &k2.scale(dt / 2.0)));
-    let k4 = vf.evaluate(&(&*x + &k3.scale(dt)));
+    let k2 = vf.evaluate(&(x + &k1.scale(dt / 2.0)));
+    let k3 = vf.evaluate(&(x + &k2.scale(dt / 2.0)));
+    let k4 = vf.evaluate(&(x + &k3.scale(dt)));
     x + &(k1.scale(dt / 6.0) + &k2.scale(dt / 3.0) + &k3.scale(dt / 3.0) + &k4.scale(dt / 6.0))
 }
 
@@ -190,8 +191,7 @@ pub fn kaplan_yorke_dimension(exponents: &[f64]) -> f64 {
         if sum < 0.0 {
             // Interpolate
             let prev_sum = sum - lambda;
-            let d_frac = prev_sum / lambda.abs();
-            return j as f64 - d_frac;
+            return j as f64 + prev_sum / lambda.abs();
         }
     }
 
